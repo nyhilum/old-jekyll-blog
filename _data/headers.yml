@@ -1,0 +1,6 @@
+class: 
+  ptitle: page-title
+  pstitle: page-subtitle
+  ctitle: content-title
+  cstitle: content-subtitle
+  plist: post-list

@@ -1,0 +1,82 @@
+@import "monokai.css";
+
+.current {
+    color: green;
+}
+
+.page-title {
+    font-size: 1.8em;
+    margin-bottom: -10px;
+}
+
+.content-title {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+.content-subtitle {
+    font-size: 1em;
+    margin-top: -15px;
+    margin-bottom: -10px;
+}
+
+.lineno {
+    color: white;
+}
+
+.gutter {
+    padding-right: 5px;
+    border-right: 2px solid white;
+}
+
+.date {
+    font-size: .8em;
+}
+
+.post-list {
+    list-style-type: none;
+    margin-bottom: 1em;
+    padding: 0;
+}
+
+a { 
+    text-decoration: none;
+}
+
+h1 {
+    font-size: 1.6em;
+    margin-bottom: -10px;
+}
+
+h2 {
+    font-size: 1.4em;
+    margin-bottom: -10px;
+}
+
+h3 {
+    font-size: 1.2em;
+    margin-bottom: -10px;
+}
+
+h4 {
+    font-size: 1em;
+    margin-bottom: -10px;
+}
+
+html {
+    font-family: Courier;
+    background-color: antiquewhite;
+}
+
+body {
+    text-align: justify;
+    max-width: 50em;
+    hyphens: auto;
+    margin: auto;
+    padding: 1em;
+}
+
+code {
+    color: white;
+}
+
