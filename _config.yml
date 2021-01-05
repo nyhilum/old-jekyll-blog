@@ -2,5 +2,6 @@
 excerpt_separator: <!--more-->
 kramdown:
   smart_quotes: ["apos","apos","quot","quot"]
+baseurl: "/blog"
 ---
 
