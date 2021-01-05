@@ -1,4 +1,6 @@
 ---
 ---
-@import "main";
-@import "monokai";
+@charset "utf-8";
+$background-color: antiquewhite;
+
+@import "base", "layout", "syntax-highlighting";
