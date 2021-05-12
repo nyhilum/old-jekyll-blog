@@ -4,33 +4,43 @@ a {
     text-decoration: none;
 }
 
+a:hover {
+    text-decoration: underline red;
+}
+
+a:visited {
+    color: darkviolet;
+}
+
 h1 {
     font-size: 1.6em;
-    margin-bottom: -10px;
+    margin-bottom: $head-bottom-margin;
 }
 
 h2 {
     font-size: 1.4em;
-    margin-bottom: -10px;
+    margin-bottom: $head-bottom-margin;
 }
 
 h3 {
     font-size: 1.2em;
-    margin-bottom: -10px;
+    margin-bottom: $head-bottom-margin;
 }
 
 h4 {
     font-size: 1em;
-    margin-bottom: -10px;
+    margin-bottom: $head-bottom-margin;
 }
 
 html {
     font-family: Courier;
-    background-color: antiquewhite;
+    background-color: $background-color;
+    color: $global-font;
 }
 
 body {
-    text-align: justify;
+    //text-align: justify;
+    line-height: $body-height;
     max-width: 50em;
     hyphens: auto;
     margin: auto;
@@ -42,6 +52,6 @@ pre {
 }
 
 code {
-    color: white;
+    color: $code-color;
 }
 

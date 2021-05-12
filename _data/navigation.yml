@@ -1,10 +1,8 @@
-- name: all
+- name: "all"
   link: /
 - name: tech
-  link: /tech.html
+  link: /tech
 - name: philosophy
-  link: /philosophy.html
+  link: /philosophy
 - name: whoami
-  link: /about.html
-- name: "@nyhilum0"
-  link: https://twitter.com/nyhilum0
+  link: /whoami

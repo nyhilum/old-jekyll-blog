@@ -4,6 +4,7 @@ layout: default
 
 <h1 class="{{ site.data.headers.class.ctitle }}">{{ page.title }}</h1>
 <p class="{{ site.data.headers.class.cstitle }}">{{ page.subtitle }}</p>
-<p class="date"><em>{{ page.date | date_to_string }}</em></p>
+<p class="date"><em>{{ page.date | date: "%Y-%m-%d" }}</em></p>
+<hr class="hr-top" />
 
 {{ content }}

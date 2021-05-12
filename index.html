@@ -7,8 +7,6 @@ subtitle: a home
 <ul class="post-list">
     {% for post in site.posts %}
     <li>
-        <!--<p class="{{ site.data.headers.class.ctitle }}"><a href="{{ post.url }}">{{ post.title }}</a></p>
-        <p class="{{ site.data.headers.class.cstitle }}">{{ post.subtitle }}</p>-->
         <p class="post-list"><a href="{{ post.url }}">{{ post.title }}</a> {{ post.subtitle }}</p>
     </li>
     {% endfor %}

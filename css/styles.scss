@@ -2,5 +2,10 @@
 ---
 @charset "utf-8";
 $background-color: antiquewhite;
+$plaintext-color: white;
+$code-color: white;
+$global-font: black;
+$body-height: 1.25;
+$head-bottom-margin: -10px;
 
 @import "base", "layout", "syntax-highlighting";
