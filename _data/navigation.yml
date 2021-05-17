@@ -1,8 +1,8 @@
 - name: "all"
   link: /
 - name: tech
-  link: /tech
+  link: /tech/
 - name: philosophy
-  link: /philosophy
+  link: /philosophy/
 - name: whoami
-  link: /whoami
+  link: /whoami/
