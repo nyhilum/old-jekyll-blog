@@ -4,9 +4,8 @@ title: whoami
 subtitle: do we ever really know ourselves?
 permalink: /whoami
 ---
-{% include titles.html %}
 
-i do some programming and some security stuff. excuse me, _certified_ security stuff. my interests lie in reverse engineering, malware analysis, forensics, and the occasional red teaming. 
+i do some programming and some security stuff. my interests lie in reverse engineering, malware analysis, forensics, and the occasional red teaming. oh, and metal \m/
 
 i'm not a web designer.
 

@@ -1,45 +1,30 @@
-
-
 a { 
     text-decoration: none;
+    color: rgb(30, 142, 255);
+    text-shadow: 0 0 5px rgba(30, 142, 255, 0.5);
 }
 
 a:hover {
-    text-decoration: underline red;
+    text-shadow: 0 0 5px rgba(47, 151, 255, 0.9);
 }
 
-a:visited {
-    color: darkviolet;
-}
-
-h1 {
-    font-size: 1.6em;
-    margin-bottom: $head-bottom-margin;
-}
-
-h2 {
-    font-size: 1.4em;
-    margin-bottom: $head-bottom-margin;
-}
-
-h3 {
-    font-size: 1.2em;
-    margin-bottom: $head-bottom-margin;
-}
-
-h4 {
-    font-size: 1em;
-    margin-bottom: $head-bottom-margin;
+@each $size in $header-font-sizes {
+    h#{index($header-font-sizes,$size)} {
+        font-size: $size;
+        color: $header-color;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 5px $header-shadow, 0 0 10px $header-shadow;
+        font-weight: normal;
+        margin-bottom: $head-bottom-margin;
+    }
 }
 
 html {
-    font-family: Courier;
+    font-family: $font-fam;
     background-color: $background-color;
     color: $global-font;
 }
 
 body {
-    //text-align: justify;
     line-height: $body-height;
     max-width: 50em;
     hyphens: auto;
@@ -49,9 +34,17 @@ body {
 
 pre {
     overflow-x: auto;
+    background: $code-bg;
+    font-size: 1.2em;
 }
 
-code {
-    color: $code-color;
+code.language-plaintext.highlighter-rouge {
+    color: $inline-color;
+    text-shadow: $inline-shadow;
+    background: $code-bg;
+    font-size: 1.2em;
 }
 
+footer {
+    border-top: solid $border-color;
+}

@@ -1,21 +1,15 @@
-.current {
-    color: green;
-}
-
 .page-title {
     font-size: 1.8em;
-    margin-bottom: -10px;
+    margin-bottom: -15px;
 }
 
-.content-title {
-    font-size: 1.8em;
-    margin-bottom: 15px;
+.page-subtitle {
+    color: $glider-color;
+    text-shadow: $glider-shadow;
 }
 
-.content-subtitle {
-    font-size: 1em;
-    margin-top: -15px;
-    margin-bottom: -10px;
+.page-header {
+    border-bottom: solid $border-color;
 }
 
 .lineno {
@@ -29,9 +23,12 @@
 
 .date {
     font-size: .8em;
+    margin-top: -13px;
 }
 
 .post-list {
+    color: $glider-color;
+    text-shadow: $glider-shadow;
     list-style-type: none;
     margin-bottom: 1em;
     padding: 0;
@@ -41,4 +38,13 @@
     line-height: 0.7;
     margin-top: -0.1rem;
     text-align: center;
+    color: $glider-color;
+    text-shadow: $glider-shadow;
+    font-weight: bolder;
+}
+
+.nav {
+    text-align: center;
+    margin-top: 15px;
+    height: 20px;
 }
