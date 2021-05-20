@@ -3,7 +3,6 @@ excerpt_separator: <!--more-->
 baseurl: ""
 kramdown:
   smart_quotes: ["apos","apos","quot","quot"]
-
 defaults:
   -
     scope:

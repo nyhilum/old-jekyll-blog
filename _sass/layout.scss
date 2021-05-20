@@ -10,6 +10,14 @@
 
 .page-header {
     border-bottom: solid $border-color;
+    padding-bottom: 15px;
+}
+
+.tag-list {
+    font-size: .8em;
+    margin-top: -10px;
+    color: $glider-color;
+    text-shadow: $glider-shadow;
 }
 
 .lineno {
