@@ -2,6 +2,8 @@
   link: /
 - name: tech
   link: /tech/
+- name: ctf
+  link: /ctf/
 - name: philosophy
   link: /philosophy/
 - name: whoami

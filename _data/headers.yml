@@ -3,4 +3,5 @@ class:
   pstitle: page-subtitle
   ctitle: content-title
   cstitle: content-subtitle
-  plist: post-list
+  pitem: post-item
+  plink: post-link
