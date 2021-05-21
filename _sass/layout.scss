@@ -15,9 +15,17 @@
 
 .tag-list {
     font-size: .8em;
-    margin-top: -10px;
+    margin-top: -12px;
     color: $glider-color;
     text-shadow: $glider-shadow;
+}
+
+.post-item {
+    font-size: .8em;
+}
+
+.post-link {
+    font-size: initial;
 }
 
 .lineno {
