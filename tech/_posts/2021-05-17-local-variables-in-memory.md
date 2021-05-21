@@ -7,7 +7,7 @@ tags: asm
 
 In programming, we're taught that variables are stored in memory, but what *exactly* does this mean?
 
-Variables in high level languages are pretty simple to understand. In C, it's simply **int x = 1;**; however, when looking at the compiled code in assembly, it's a bit more complicated.
+Variables in high level languages are pretty simple to understand. In C, it's simply `int x = 1`; however, when looking at the compiled code in assembly, it's a bit more complicated.
 
 Note that global variables and local function variables are stored differently. This post only covers local function variables.
 
@@ -20,7 +20,7 @@ int main(void)
 }
 {% endhighlight %}
 
-Compiling this code on with x64 gcc gives the following output for the **main** function:
+Compiling this code on with x64 gcc gives the following output for the `main` function:
 {% highlight plaintext linenos %}
 ; output from godbolt.org
 main:
@@ -32,9 +32,9 @@ main:
         ret
 {% endhighlight %}
 
-Once the high level code has been converted into assembly, you're not given a helpful looking line like **int x = 13**, but due to the simplicity of the code above, you could probably deduce that the line **mov DWORD PTR [rbp-4], 13** has something to do with the variable assignment in C (and you'd be right).
+Once the high level code has been converted into assembly, you're not given a helpful looking line like `int x = 13`, but due to the simplicity of the code above, you could probably deduce that the line `mov DWORD PTR [rbp-4], 13` has something to do with the variable assignment in C (and you'd be right).
 
-Let's dissect this line a bit: **mov DWORD PTR [rbp-4], 13**. This line is saying "move the number 13 into a double word size memory location specified by the memory address pointed to by rbp-4". Alternatively, "move 13 to address rbp-4 that's 4 bytes in size". Using a debugger will help visualize this better.
+Let's dissect this line a bit: `mov DWORD PTR [rbp-4], 13`. This line is saying "move the number 13 into a double word size memory location specified by the memory address pointed to by rbp-4". Alternatively, "move 13 to address rbp-4 that's 4 bytes in size". Using a debugger will help visualize this better.
 
 Loading up the binary in gdb, I put a breakpoint right before 13 is moved into the designated memory location.
 
@@ -50,7 +50,7 @@ Dump of assembler code for function main:
    0x000055555555513e <+21>:    ret
 {% endhighlight %}
 
-Examining the memory at **rbp-0x4** at this point will either show junk or a zero value. In this case, it shows 0.
+Examining the memory at `rbp-0x4` at this point will either show junk or a zero value. In this case, it shows 0.
 
 {% highlight plaintext linenos %}
 (gdb) x/w $rbp-4
