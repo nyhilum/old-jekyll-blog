@@ -39,10 +39,10 @@ pre {
 }
 
 code.language-plaintext.highlighter-rouge {
+    font-family: $font-fam;
     color: $inline-color;
     text-shadow: $inline-shadow;
     background: $code-bg;
-    font-size: 1.2em;
 }
 
 footer {
