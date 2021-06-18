@@ -9,5 +9,7 @@ i do some programming and some security stuff. my interests lie in reverse engin
 
 i'm not a web designer.
 
+did i make a mistake, have a question, or just wanna chat? feel free to send me a message. 
+
 twitter -> [@nyhilum0](https://twitter.com/nyhilum0)
 

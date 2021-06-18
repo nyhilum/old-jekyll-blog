@@ -2,7 +2,7 @@
 title: local variables in memory
 subtitle: thanks for the memories
 slug: local variables in memory
-tags: asm
+tags: asm notes
 ---
 
 In programming, we're taught that variables are stored in memory, but what *exactly* does this mean?
