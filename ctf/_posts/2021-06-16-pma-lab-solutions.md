@@ -218,3 +218,68 @@ Decrypting the 2 strings gives us:
 The first string is a web address which is used to pull down data and it writes that data into a file named spoolsrv.exe to do something malicious.
 
 After this has been completed, the malware terminates by using `ExitProcess`.
+
+# chapter 16 -- anti-debugging
+This chapter primarily focused on anti-debugging techniques used by Windows programs.
+
+## 16-1
+Since we know this program has anti-debugging baked in, I decided to open the program in IDA first. The `main()` function was determined to start in `sub_403530()`.
+
+Within the main function, we see some instructions which are accessing the [process environment block (PEB)](https://en.wikipedia.org/wiki/Process_Environment_Block).
+
+```
+.text:00403540                 mov     [ebp+var_1824], 0
+.text:0040354A                 mov     [ebp+var_1828], 0
+.text:00403554                 mov     eax, large fs:30h
+.text:0040355A                 mov     bl, [eax+2]
+.text:0040355D                 mov     [ebp+var_1820], bl
+.text:00403563                 movsx   eax, [ebp+var_1820]
+.text:0040356A                 test    eax, eax
+.text:0040356C                 jz      short loc_403573
+.text:0040356E                 call    sub_401000
+;...
+.text:00403573                 mov     eax, large fs:30h
+.text:00403579                 mov     eax, [eax+18h]
+.text:0040357C                 db      3Eh
+.text:0040357C                 mov     eax, [eax+10h]
+.text:00403580                 mov     [ebp+var_1824], eax
+.text:00403586                 cmp     [ebp+var_1824], 0
+.text:0040358D                 jz      short loc_403594
+.text:0040358F                 call    sub_401000
+;...
+.text:00403594                 mov     eax, large fs:30h
+.text:0040359A                 db      3Eh
+.text:0040359A                 mov     eax, [eax+68h]
+.text:0040359E                 sub     eax, 70h
+.text:004035A1                 mov     [ebp+var_1828], eax
+.text:004035A7                 cmp     [ebp+var_1828], 0
+.text:004035AE                 jnz     short loc_4035B5
+.text:004035B0                 call    sub_401000
+```
+
+Each of these different blocks accesses a different part of the PEB. These different parts contain different types of information to state whether or not a process is being debugged. In order from top to bottom the program is looking for
+* `BeingDebugged` flag at PEB+0x2 with a non-zero value
+* `ForceFlags` at PEB+0x18+0x10 with a non-zero value
+* `NtGlobalFlags` at PEB+0x68 with a value of 0x70
+
+If the test fails, then `sub_401000` is called which causes the program to immediately stop and delete itself from the machine. There are a few ways to avoid the anti-debugging measures:
+* manually patch all of the jump instructions
+* replace the `call`s to `sub_401000` with `nop`
+* manually modify the PEB structure locations referenced by the program
+* use a plugin that aids in anti-anti-debugging
+
+Manually patching instructions would likely take a while unless you wrote a script to patch the program because the jumps and calls are sprinkled throughout the program itself, so while this is possible, it would be tedious.
+
+Modifying the PEB would be another option as long as you identified the proper place in memory where the flags are set. We know that the PEB starts at `fs:[0x30]`, so in x32dbg's dump window, we can navigate to that address by pressing `ctrl+g` then entering that value in the box.
+
+![x64dbg peb dump](../../assets/pma_lab16-1_img1_x32dbg.png)
+
+Once you identify the PEB, you can start clearing values in the PEB to prevent the checks from occurring. This is as simple as clearing the values in memory and setting them to 0. The only exception is the `ForcedFlags` field. Instead, you set the pointer to the `ProcessHeap` array to 0.
+
+Alternatively, you can avoid all of this suffering and just install a plugin called [ScyllaHide](https://github.com/x64dbg/ScyllaHide), or a plugin of your choice if you know of a better one. This will basically do what we did manually to the PEB plus a lot of extra options.
+
+
+
+
+
+
