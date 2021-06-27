@@ -231,7 +231,7 @@ Within the main function, we see some instructions which are accessing the [proc
 .text:00403540                 mov     [ebp+var_1824], 0
 .text:0040354A                 mov     [ebp+var_1828], 0
 .text:00403554                 mov     eax, large fs:30h
-.text:0040355A                 mov     bl, [eax+2]
+.text:0040355A                 mov     bl, [eax+2] ;BeingDebugged
 .text:0040355D                 mov     [ebp+var_1820], bl
 .text:00403563                 movsx   eax, [ebp+var_1820]
 .text:0040356A                 test    eax, eax
@@ -241,7 +241,7 @@ Within the main function, we see some instructions which are accessing the [proc
 .text:00403573                 mov     eax, large fs:30h
 .text:00403579                 mov     eax, [eax+18h]
 .text:0040357C                 db      3Eh
-.text:0040357C                 mov     eax, [eax+10h]
+.text:0040357C                 mov     eax, [eax+10h] ;ForcedFlags
 .text:00403580                 mov     [ebp+var_1824], eax
 .text:00403586                 cmp     [ebp+var_1824], 0
 .text:0040358D                 jz      short loc_403594
@@ -249,7 +249,7 @@ Within the main function, we see some instructions which are accessing the [proc
 ;...
 .text:00403594                 mov     eax, large fs:30h
 .text:0040359A                 db      3Eh
-.text:0040359A                 mov     eax, [eax+68h]
+.text:0040359A                 mov     eax, [eax+68h] ;NtGlobalFlags
 .text:0040359E                 sub     eax, 70h
 .text:004035A1                 mov     [ebp+var_1828], eax
 .text:004035A7                 cmp     [ebp+var_1828], 0
@@ -278,7 +278,115 @@ Once you identify the PEB, you can start clearing values in the PEB to prevent t
 
 Alternatively, you can avoid all of this suffering and just install a plugin called [ScyllaHide](https://github.com/x64dbg/ScyllaHide), or a plugin of your choice if you know of a better one. This will basically do what we did manually to the PEB plus a lot of extra options.
 
+## 16-2
+This binary is more of a CTF than it is an example of a malicious payload.
 
+Running the binary in the command line, we get the following output:
+
+```
+.\Lab16-02.exe
+usage: .\Lab16-02.exe <4 character password>
+```
+
+As one would expect, inputting an incorrect password simply tells you to try again. The hard part now is trying to determine what the password is. Again, the best first step is to identify the `main()` function which is `sub_4011e0`. Skipping over the function prologue we see the following block:
+
+```
+.tls:0040120A loc_40120A:                             ; CODE XREF: sub_4011E0+11↑j
+.tls:0040120A                 lea     edx, [ebp+ThreadId]
+.tls:0040120D                 push    edx             ; lpThreadId
+.tls:0040120E                 push    0               ; dwCreationFlags
+.tls:00401210                 push    0               ; lpParameter
+.tls:00401212                 push    offset StartAddress ; lpStartAddress
+.tls:00401217                 push    0               ; dwStackSize
+.tls:00401219                 push    0               ; lpThreadAttributes
+.tls:0040121B                 call    ds:CreateThread
+.tls:00401221                 push    3E8h            ; dwMilliseconds
+.tls:00401226                 call    ds:Sleep
+.tls:0040122C                 push    4
+.tls:0040122E                 push    offset byte_408030
+.tls:00401233                 mov     eax, [ebp+arg_4]
+.tls:00401236                 mov     ecx, [eax+4]
+.tls:00401239                 push    ecx
+.tls:0040123A                 call    sub_402110
+.tls:0040123F                 add     esp, 0Ch
+.tls:00401242                 mov     [ebp+var_4], eax
+.tls:00401245                 cmp     [ebp+var_4], 0
+.tls:00401249                 jnz     short loc_40125A
+```
+
+Here we see a few function calls. I skipped over the library calls and decided to investigate the lines starting with `offset`. Double clicking on `StartAddress` gives you a rather complicated that seems to be performing some sort of decoding or decryption.
+
+```
+.tls:00401099                 xor     eax, eax
+.tls:0040109B                 mov     bl, byte_40A968
+.tls:004010A1                 or      al, 1
+.tls:004010A3                 shl     al, 2
+.tls:004010A6                 mov     byte_408033, al
+.tls:004010AB                 mov     byte_408032, 7
+.tls:004010B2                 mov     byte_408030, 9
+.tls:004010B9                 dec     al
+.tls:004010BB                 mov     byte_408031, al
+.tls:004010C0                 or      al, 2
+.tls:004010C2                 mov     byte_408033, al
+.tls:004010C7                 mov     byte_408031, 0Bh
+.tls:004010CE                 add     al, 0Bh
+.tls:004010D0                 mov     byte_408033, al
+;...
+```
+
+It seems here that 4 variables are made use of here with their values: 
+* `byte_408030` = 0x50
+* `byte_408031` = 0x7d
+* `byte_408032` = 0xff
+* `byte_408033` = 0xff
+
+One other interesting thing about this function is that it accesses the PEB and moves the `BeingDebugged` flag into `bl` for use later in the decoding routine. This means that the final decoded value will be different depending on if the program is being debugged or not.
+
+```
+.tls:0040112B                 mov     ebx, large fs:30h ;assign peb pointer to ebx
+;...
+.tls:0040118B                 mov     bl, [ebx+2] ;store BeingDebugged flag into bl
+.tls:0040118E                 rol     byte_408031, 1
+.tls:00401194                 xor     byte_408033, 80h
+.tls:0040119B                 rol     byte_408033, 7
+.tls:004011A2                 add     byte_408032, bl ;add BeingDebugged flag to this variable
+```
+
+Now we're presented with two options: we can attempt to write our own script based on the disassembly to recreate the decoded string, or we can run the program in a debugger and let the program do the work. Since I'm lazy, I decided to do the latter.
+
+> The main debugger used by this book is OllyDbg. I prefer x64dbg, but I'll use OllyDbg 2.0 in this case since the questions specify OllyDbg.
+
+Upon attempting to load the program into OllyDbg, the program terminates immediately. This tells us that something is preventing the program from running if being debugged by OllyDbg. I reviewed the disassembly in IDA pro and noticed that the section was prefixed with `.tls` which indicates that this program is likely using [thread-local storage (TLS)](https://en.wikipedia.org/wiki/Thread-local_storage) callbacks (not to be confused with transport layer security). I opened the binary in CFF explorer to confirm the presence of the TLS callback section.
+
+![cff explorer tls callback section](../../assets/pma_lab16-2_img1_cff.png)
+
+As far as we're concerned, the important part of about TLS callbacks is that they're executed _before_ a program's entry point is hit. Most debuggers break on a program's entry point by default, so this TLS section is free to execute code before the debugger automatically stops the program.
+
+Most modern debuggers should have the option to break on TLS callbacks, but some do not do it by default. x64dbg, I believe, is configured to do this by default, but OllyDbg 2.0 is not and OllyDbg prior to version 2 doesn't have this option at all. To configure it in OllyDbg, go to Options -> Debugging -> Start and select "TLS callback (if defined)". This will cause OllyDbg to stop at the first TLS callback it finds.
+
+After configuring OllyDbg properly, restart the program. Luckily, we see that OllyDbg doesn't just quit this time. Instead, execution has been paused at the start of the TLS callback function. Almost immediately, we can see suspicious code:
+
+![ollydbg tls callback ollydbg detection](../../assets/pma_lab16-2_img2_tls-callback.png)
+
+This code is using [FindWindowA](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindowa) to see if OllyDbg is running. If this check succeeds, the program quits. In order to bypass this check, we can patch the `jz` instruction to `jmp` so the jump is always taken.
+
+After modifying the jump instruction, I set a breakpoint at 0x4011e0 which is the `main()` function simply to stop the execution. I then set another breakpoint after 0x40122c so the variable at 0x408030 gets populated.  The comments column is then populated with the string "bzqrp@ss" at 0x40122e.
+
+![ollydbg incorrect password](../../assets/pma_lab16-2_img3_olly-wrong-pass.png)
+
+We see this string and 2 other arguments get pushed to the stack and then the function `sub_402110` is called. The other 2 arguments are the number 4 and the argument that was supplied to the command line. Based on the 3 arguments and the content of the function, we can infer that the function being called is `strncmp`. Now we know where the comparison between the password and the user supplied argument is being performed. 
+
+However, the password we recovered earlier was more than 4 characters--"bzqrp@ss". `strncmp` takes 3 arguments where one of which says how many characters are to be compared. The 4 being pushed onto the stack says to only compare the first 4 characters of the 2 strings. Therefore, we can ignore the last 4 characters of the password "p@ss". That means we can assume the password is "bzqr", right?
+
+However, typing in "bzqr" in our command line gives us an invalid password error. Why is this? Recall that there was some functionality in the `StartAddress` function to return a different value based on whether or not the current program is being debugged. We can now assume that "bzqr" is not actually correct.
+
+To bypass this problem, we will need to modify the PEB `BeingDebugged` member to 0 or just use an anti-anti-debugging plugin. I personally opted for the plugin since it's easier. After installing the plugin and rerunning the program, we get back down to the string again and we see the value "bzrrp@ss" instead of "bzqrp@ss".
+
+![x32dbg showing right password](../../assets/pma_lab16-2_img4_x32dbg-pass.png)
+
+This means that the correct password is "bzrr".
+
+![successful password usage](../../assets/pma_lab16-2_img5_success.png)
 
 
 
