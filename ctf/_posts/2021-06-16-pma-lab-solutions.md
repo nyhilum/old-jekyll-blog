@@ -1,6 +1,6 @@
 ---
 title: practical malware analysis lab solutions
-subtitle: how i've anticipated your return to planet earth
+subtitle: how i've anticipated your return to planet earth <!-- Thank You Scientist -- FXMLDR -->
 slug: pma lab solutions
 tags: labs malware reversing
 ---
@@ -37,6 +37,8 @@ Now we're able to analyze the once obfuscated code blocks. You can ultimately ig
 Each code block appears to be moving the user's input into a register and then comparing that register's value to some hex value. If you know your ASCII table, you'll know that the values being compared are the characters 'p' (0x70), 'q' (0x71), and 'd' (0x64). 
 
 If you attempted to enter the characters in the order in which they're seen in (i.e. pqd), you'll fail the challenge. This is because the second code block is comparing the third character of the user string with the password. Therefore, the correct order for the password is 'pdq'.
+
+[\[back to top\]](#)
 
 ## 15-2
 The `main()` function starts at `loc_401000`. Scrolling down, broken disassembly can be found starting at `401163`.
@@ -110,6 +112,8 @@ The jump is technically invalid, so converting it to data then converting the by
 
 However, again, we see some more nonsense, so we just repeat our process of turning code into data and then back again to reveal some new instructions. One interesting instruction is the call to `sub_40130f` which, like `sub_401386`, simply sets up a string called "Account Summary.xls.exe". After the file is retrieved, it's executed in a shell as noted by `ShellExecuteA` and the malware is now running on the machine.
 
+[\[back to top\]](#)
+
 ## 15-3
 This piece of malware attempts to be tricky by disguising itself as a typical program. Running the application shows it to be a very basic process monitor. However, opening the program in IDA shows a call to `URLDownloadToFileA` which seems suspicious.
 
@@ -140,7 +144,7 @@ The value 0x400000 is moved into `eax` and then `or`ed with 0x148c gives you 0x4
 .text:004014BF                 retn
 ``` 
 
-One thing that stands out is that this code appears to be messing with the process environment block by adding its own code to be picked up by the exception handler when an exception occurs. It then forces an exception by causing a divide by zero, so the code after the `div` instruction doesn't actually execute. Once the exception occurs, the code will jump to 0x4014c0.
+One thing that stands out is that this code appears to be messing with the [thread environment block (TEB)](https://en.wikipedia.org/wiki/Win32_Thread_Information_Block) by adding its own code to be picked up by the exception handler when an exception occurs. It then forces an exception by causing a divide by zero, so the code after the `div` instruction doesn't actually execute. Once the exception occurs, the code will jump to 0x4014c0.
 
 Again, the disassembly is broken at this address, so it needs to be fixed up by converting data to code and code to data like we have been doing. The resulting code ends up as the following.
 
@@ -219,6 +223,8 @@ The first string is a web address which is used to pull down data and it writes 
 
 After this has been completed, the malware terminates by using `ExitProcess`.
 
+[\[back to top\]](#)
+
 # chapter 16 -- anti-debugging
 This chapter primarily focused on anti-debugging techniques used by Windows programs.
 
@@ -278,6 +284,7 @@ Once you identify the PEB, you can start clearing values in the PEB to prevent t
 
 Alternatively, you can avoid all of this suffering and just install a plugin called [ScyllaHide](https://github.com/x64dbg/ScyllaHide), or a plugin of your choice if you know of a better one. This will basically do what we did manually to the PEB plus a lot of extra options.
 
+[\[back to top\]](#)
 ## 16-2
 This binary is more of a CTF than it is an example of a malicious payload.
 
@@ -388,6 +395,149 @@ This means that the correct password is "bzrr".
 
 ![successful password usage](../../assets/pma_lab16-2_img5_success.png)
 
+[\[back to top\]](#)
+
+## 16-3
+This malware is similar to lab 9-2 with some anti-debugging and other modifications.
+
+Running strings on the binary gives us a lot of junk, some library functions, and some strings relating to `cmd.exe`. It looks like there's a `/c del` command in there, so the malware is likely going to delete something. Trying to run the malware makes a `cmd` window flash and then disappear--nothing seems to have happened. 
+
+Opening the program and identifying the program's `main()` function, `sub_4013d0`, shows the use of a stack string. I know this is a stack string because the hex values here fall within the ASCII range.
+
+![ida stack string](../../assets/pma_lab16-3_img1_stack-string.png)
+
+Converting these values to characters gives us the following strings:
+* 1qbz2wsx3edc
+* ocl.exe
+
+After a few string operations, we see a call to `sub_4011e0`. On first glace, this function seems to do something with performance as there are calls to `QueryPerformanceCounter`. This function is used, in this case, as an attempt to identify a debugger by estimating how much time should pass between 2 or more calls to `QueryPerformanceCounter`. Generally, the programmer will estimate how much time should pass between calls, and if it's outside of that range, the program will do something else. 
+
+However, in between performance counter calls, the code is forcing a divide by zero exception to occur which will cause all debuggers to pause execution. This pause would cause enough time to elapse to allow the code to detect the presence of a debugger using its own predefined time constraints.
+
+```
+;...
+.text:0040121D    call    ds:QueryPerformanceCounter ;1st counter
+;...
+.text:00401229    xor     ecx, ecx ;zero out ecx
+;...
+.text:00401234    push    eax
+.text:00401235    push    large dword ptr fs:0 
+.text:0040123C    mov     large fs:0, esp ;modify exception handler
+.text:00401243    div     ecx ;divide by zero
+;...
+.text:00401271    call    ds:QueryPerformanceCounter ;2nd counter
+.text:00401277    mov     edx, dword ptr [ebp+var_110]
+.text:0040127D    sub     edx, dword ptr [ebp+PerformanceCount]
+.text:00401280    mov     [ebp+var_114], edx
+.text:00401286    cmp     [ebp+var_114], 4B0h ;within timeframe?
+.text:00401290    jle     short loc_40129C
+.text:00401292    mov     [ebp+var_118], 2 ;time constraint missed, at 2 to variable
+;...
+```
+
+I tried a few different configurations to make my debugger run fast enough so that it doesn't hit the time constraints without modifying the code itself, but I wasn't able to make that happen. Further reading suggests that even though I configured the debugger to automatically pass the exception to the program that debuggers handle exceptions much more slowly than if the program were running naturally. Also, it's very likely my VM is simply not performant enough while my debugger is running.
+
+Ultimately, I figured out what happens when the timing check isn't successful. The program sets a variable located at `[ebp-118]` to 2 instead of its default value of 1. This has a direct impact on the subsequent loop that occurs later when it manipulates the string `ocl.exe`.
+
+```
+.text:004011F6    mov     [ebp+var_118], 1 ;set to 1
+;...
+.text:00401271    call    ds:QueryPerformanceCounter
+.text:00401277    mov     edx, dword ptr [ebp+var_110]
+.text:0040127D    sub     edx, dword ptr [ebp+PerformanceCount]
+.text:00401280    mov     [ebp+var_114], edx
+.text:00401286    cmp     [ebp+var_114], 4B0h
+.text:00401290    jle     short loc_40129C ;performance check fails
+.text:00401292    mov     [ebp+var_118], 2 ;set to 2 for failing
+;...
+.text:004012B7 loc_4012B7:                             ; CODE XREF: sub_4011E0+C6↑j
+.text:004012B7    cmp     [ebp+var_11C], 3
+.text:004012BE    jge     short loc_4012EA
+.text:004012C0    mov     ecx, [ebp+var_11C]
+.text:004012C6    add     ecx, 1
+.text:004012C9    imul    ecx, [ebp+var_118] ;multiply by 1 or 2
+```
+
+When this function finishes, you're left with one of two strings: `qgr.exe` or `peo.exe`. `qgr.exe` is what you get when you fail the timing checks, and `peo.exe` is what you get if you pass them. This is important for the `strncmp` (`sub_4017b0`) function call which compares the binary's current name with the transformed name. The 2 values have to match or else the program will terminate. Therefore, the binary should be renamed to `peo.exe` in order to allow the malware to run correctly when not under a debugger. You could change the binary's name to `qgr.exe` while debugging it so you do not have to worry about patching the program during a debugging session, but when the malware runs for real, it will need to have the name `peo.exe`, so knowing its real name is important for when you list out the indicators of compromise.
+
+![executable name failed timing check](../../assets/pma_lab16-3_img2_failed-timing-check.png)
+
+![executable name successful timing check](../../assets/pma_lab16-3_img3_success-timing-check.png)
+
+A couple of blocks of code down we see 2 calls to `GetTickCount` and a call to `sub_401000`. Inside `sub_401000`, we see another forced exception to slow down performance of the debugger, so when the second `GetTickCount` is called the timing will fail and the program will quit. Analyzing `sub_401000` shows that it doesn't do anything important except to force an exception, so this function can be patched out to avoid failing the timing check. Alternatively, the `jbe` can be patched to `jmp` so the jump is always taken.
+
+```
+loc_401584:
+call    ds:GetTickCount
+mov     [ebp+var_2B4], eax
+call    sub_401000 ;forces an exception, can be patched out
+call    ds:GetTickCount
+mov     [ebp+var_2BC], eax
+mov     ecx, [ebp+var_2BC]
+sub     ecx, [ebp+var_2B4]
+cmp     ecx, 1
+jbe     short loc_4015B7 ;alt. change to jmp
+```
+
+The next block of code, if you passed the timing checks, includes a call to `sub_401300`. This subroutine, again, includes another forced exception and then the `rdtsc` instruction. `rdtsc` is an instruction that counts the time since last system reboot, so using it twice will give you a difference in time between a given set of instructions.
+
+In this situation, when the timing checks fail, `sub_4010e0` is called. The long and short of this function's purpose is to delete the malware if the timing checks fail.
+
+```
+;sub_4010e0
+push    104h            ; nSize
+lea     eax, [ebp+Filename]
+push    eax             ; lpFilename
+push    0               ; hModule
+call    ds:GetModuleFileNameA
+push    104h            ; cchBuffer
+lea     ecx, [ebp+Filename]
+push    ecx             ; lpszShortPath
+lea     edx, [ebp+Filename]
+push    edx             ; lpszLongPath
+call    ds:GetShortPathNameA
+mov     edi, offset aCDel ; "/c del "
+lea     edx, [ebp+Parameters]
+;...
+push    0               ; nShowCmd
+push    0               ; lpDirectory
+lea     eax, [ebp+Parameters]
+push    eax             ; lpParameters
+push    offset File     ; "cmd.exe"
+push    0               ; lpOperation
+push    0               ; hwnd
+call    ds:ShellExecuteA
+push    0               ; uExitCode
+```
+
+If the timing checks are successful, this subroutine then takes the string `1qbz2wsx3edc` and uses it to decode the seemingly junk string that's stored at 0x40604c.
+
+![junk string at 40604c](../../assets/pma_lab16-3_img4_junk-string.png)
+
+```
+loc_401397:
+cmp     [ebp+var_C], 1Ch
+jge     short loc_4013C0
+mov     ecx, [ebp+arg_4] ;junk string at 0x40604c
+add     ecx, [ebp+var_C]
+movsx   ecx, byte ptr [ecx]
+mov     eax, [ebp+var_C]
+cdq
+idiv    [ebp+var_8]
+mov     eax, [ebp+arg_0]
+movsx   edx, byte ptr ds:(loc_40132B - 40132Bh)[eax+edx]
+xor     ecx, edx
+mov     eax, [ebp+arg_8] ;1qbz2wsx3edc
+add     eax, [ebp+var_C]
+mov     byte ptr ds:(loc_40132B - 40132Bh)[eax], cl
+jmp     short loc_40138E
+```
+
+I allowed the malware to execute this loop for me so I didn't have to decode it manually. Ultimately, the junk string was transformed into the URL `adg.malwareanalysisbook.com`.
+
+Since this exercise was to simply identify the anti-debugging techniques and to bypass them, I'll stop here, but there is additional functionality if you'd like to investigate further.
+
+[\[back to top\]](#)
 
 
 
