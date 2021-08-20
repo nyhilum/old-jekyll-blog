@@ -48,3 +48,13 @@ code {
 footer {
     border-top: solid $border-color;
 }
+
+table {
+    table-layout: auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+tr, th, td {
+    border: solid 1px;
+}
