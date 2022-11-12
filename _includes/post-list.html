@@ -13,8 +13,8 @@
         {% endfor %}
     {% elsif page.url == "/" %}
         {% for post in site.posts %}
-        <li>
-            <p class="{{ site.data.headers.class.pitem }}">
+        <li class="{{ site.data.headers.class.pitem }}">
+            <p>
                 <a href="{{ post.url }}" class="{{ site.data.headers.class.plink }}">
                     [{{ post.date | date: "%Y-%m-%d"}}] {{ post.title }}
                 </a>
