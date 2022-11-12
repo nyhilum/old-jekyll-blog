@@ -23,8 +23,8 @@ $subtitle-shadow: rgba(0,0,0,0.9);
 $border-color: rgba(214, 0, 214, 0.5);
 
 $header-font-sizes: 1.6em, 1.4em, 1.2em, 1em;
-$body-height: 1.25;
+$body-height: 1.4;
 $head-bottom-margin: -10px;
-$font-fam: "Fira Mono", Monaco, "Lucida Console", Terminal, monospace;
+$font-fam: "Fira Mono", monospace;
 
 @import "base", "layout", "syntax-highlighting";
