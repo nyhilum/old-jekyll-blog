@@ -1,13 +1,13 @@
 {% if page.tags | size > 0 %}
-    <div class="tag-list">
+    <p class="page-tag-list">
         {% for tag in page.tags %}
         [<a href="/tags/{{ tag }}">#{{ tag }}</a>]
         {% endfor %}
-    </div>
+    </p>
     {% elsif post.tags | size > 0 %}
-    <div class="tag-list">
+    <p class="tag-list">
         {% for tag in post.tags %}
         [<a href="/tags/{{ tag }}">#{{ tag }}</a>]
         {% endfor %}
-    </div>
+    </p>
 {% endif %}

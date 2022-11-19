@@ -1,40 +1,66 @@
 .page-title {
     font-size: 24px;
-    margin-bottom: -15px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 .page-subtitle {
+    margin-top: 0px;
+    margin-bottom: 0px;
     color: $glider-color;
     text-shadow: $glider-shadow;
 }
 
+.page-tag-list {
+    font-size: 14px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    color: $glider-color;
+    text-shadow: $glider-shadow;
+}
+
+.date {
+    font-size: 14px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
 .page-header {
     border-bottom: solid $border-color;
-}
-
-.tag-list {
-    font-size: 14px;
-    margin-top: -12px;
-    color: $glider-color;
-    text-shadow: $glider-shadow;
+    padding-bottom: 15px;
 }
 
 .post-link {
     font-size: initial;
 }
 
+.post-item {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.post-subtitle {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.tag-list {
+    font-size: 14px;
+    margin-top: 5px;
+    margin-bottom: 16px;
+    color: $glider-color;
+    text-shadow: $glider-shadow;
+}
+
 .lineno {
     color: white;
 }
 
-.gutter {
+.gutter, .rouge-gutter {
     padding-right: 5px;
     border-right: 2px solid white;
-}
-
-.date {
-    font-size: 14px;
-    margin-top: 5px;
+    width: 50px;
+    text-align: right;
+    text-shadow: none;
 }
 
 .post-list {

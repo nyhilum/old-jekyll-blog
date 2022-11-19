@@ -40,7 +40,7 @@ pre {
 code {
     font-family: $font-fam;
     color: $inline-color;
-    text-shadow: $inline-shadow;
+    //text-shadow: $inline-shadow;
 }
 
 footer {
@@ -58,4 +58,9 @@ table {
 tr, th, td {
     border: solid 1px;
     padding: 6px;
+}
+
+figure.highlight {
+    margin-left: 0px;
+    margin-right: 0px;
 }
