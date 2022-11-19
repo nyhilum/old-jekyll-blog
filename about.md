@@ -2,7 +2,7 @@
 layout: default
 title: whoami
 subtitle: do we ever really know ourselves?
-permalink: /whoami
+permalink: /whoami/
 ---
 
 i do some programming and some security stuff. my interests lie in reverse engineering, malware analysis, forensics, and the occasional red teaming. oh, and metal \m/
