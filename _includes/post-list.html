@@ -1,29 +1,11 @@
 <ul class="post-list">
     {% if site.categories[page.cat] | size > 0 %}
         {% for post in site.categories[page.cat] %}
-        <li>
-            <p class="{{ site.data.headers.class.pitem }}">
-                <a href="{{ post.url }}" class="{{ site.data.headers.class.plink }}">
-                    [{{ post.date | date: "%Y-%m-%d"}}] {{ post.title }}
-                </a>
-                <p>{{ post.subtitle }}</p>
-            </p>
-            {% include tag-list.html %}
-        </li>
+            {% include posts.html %}
         {% endfor %}
     {% elsif page.url == "/" %}
         {% for post in site.posts %}
-        <li>
-            <p class="{{ site.data.headers.class.pitem }}">
-                <a href="{{ post.url }}" class="{{ site.data.headers.class.plink }}">
-                    [{{ post.date | date: "%Y-%m-%d"}}] {{ post.title }}
-                </a>
-            </p>
-            {% if post.subtitle %}
-            <p class="post-subtitle">{{ post.subtitle }}</p>
-            {% endif %}
-            {% include tag-list.html %}
-        </li>
+            {% include posts.html %}
         {% endfor %}
     {% else %}
         <p>coming soon (tm)</p>

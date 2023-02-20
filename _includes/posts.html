@@ -1,0 +1,11 @@
+<li>
+    <p class="{{ site.data.headers.class.pitem }}">
+        <a href="{{ post.url }}" class="{{ site.data.headers.class.plink }}">
+            [{{ post.date | date: "%Y-%m-%d"}}] {{ post.title }}
+        </a>
+    </p>
+    {% if post.subtitle %}
+    <p class="post-subtitle">{{ post.subtitle }}</p>
+    {% endif %}
+    {% include tag-list.html %}
+</li>
