@@ -4,7 +4,7 @@ subtitle: "before you learn to run, you must learn why you can't"
 slug: "threat modeling two"
 tags: threat-modeling
 ---
-In [part 1]({% post_url /tech/2021-08-19-threat-modeling-pt1 %}), we talked about how to get started with threat modeling. You should now have a list of your assets, threats, and threat actors. However, a threat model is much use if you don't have mitigations to your threats.
+In [part 1]({% post_url 2021-08-19-threat-modeling-pt1 %}), we talked about how to get started with threat modeling. You should now have a list of your assets, threats, and threat actors. However, a threat model is much use if you don't have mitigations to your threats.
 
 However, before we get to the actual mitigations, you will need to understand some concepts when evaluating tools in order to select a tool appropriate for your threat model. You can scan the headings of this post and if you think you have a grasp on the concepts, feel free to move on to part 3 which will help you in your tool search.
 

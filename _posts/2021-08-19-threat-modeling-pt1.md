@@ -3,6 +3,7 @@ title: "threat modeling for your digital life part 1: an introduction"
 subtitle: "just because you're paranoid doesn't mean they aren't out to get you"
 slug: "threat modeling one"
 tags: threat-modeling 
+categories: tech
 ---
 
 Threat modeling is a process used by cybersecurity professionals to determine what is likely to pose a threat to a software system. However, threat modeling is also used every day by most people without them even realizing it. For example, when the weather is bad outside, you may weigh the option to go into work or not, assuming you have that option. 
@@ -50,12 +51,9 @@ Let's say you have an alt Twitter account because you don't want to be horny on 
 
 It's okay if you identify threats that cannot be attributed to a particular threat actor. Again, the threat actors are just to help you identify threats that could happen, but identifying a threat without an actor would put you ahead of an actor you didn't think of at the time. 
 
-# going further: determining risk levels
-Risk assessment, specifically [qualitative risk assessment](https://www.pmi.org/learning/library/qualitative-risk-assessment-cheaper-faster-3188), is beyond the scope of this post, but it's worth mentioning. Basically, for each threat, you should determine its likelihood of happening as well as the impact it can cause should it happen. Where these two intersect is your risk level for a given threat. If you know you're being targeted by a specific threat actor, you could include the threat actor in as well. For example, law enforcement being able to intercept your SMS communication is very likely and the impact would likely be critical; however, a jilted lover being able to do the same thing is rather unlikely, but again, should they succeed, the impact would likely be critical.
-
-For example, you could use a 5x5 matrix that looks like the following (columns are severity, rows are likelihood):
-
-|               | negligible | low      | moderate | high     | critical |
+# going further: determining risk levels Convert to jekyll (#2)
+January 5, 2023 15:57
+0006-iowa-house-video-     | critical |
 |---------------|------------|----------|----------|----------|----------|
 | very likely   | low        | moderate | high     | high     | high     |
 | likely        | low        | moderate | moderate | high     | high     |
