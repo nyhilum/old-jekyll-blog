@@ -20,17 +20,17 @@ This program's sole purpose is to take an argument and print "good job" if the s
 
 After identifying the `main()` function (`loc_401000`), we already see some disassembly errors noted by IDA.
 
-![invalid jumps](../../assets/pma_lab15-1_invalid-jmps.png)
+![invalid jumps](/assets/pma_lab15-1_invalid-jmps.png)
 
 Generally, disassemblers will evaluate the false path of a conditional jump first and trust that disassembled code. This sometimes causes the true path to be nonsensical when its evaluated if code is written in a particular manner. In the above image, you'll notice that the jump points to a byte inside the `call` instruction itself which isn't really valid.
 
 To fix this problem, simply convert the `call` instruction into data and then convert the opcodes after 0xe8 into code. Once you covert that data into code, you may notice some other operations get turned into data. Simply continue down the list until no more data so you'll see something like the following.
 
-![convert call](../../assets/pma_lab15-1_call-convert1.png)
+![convert call](/assets/pma_lab15-1_call-convert1.png)
 
 You'll need to repeat this process 4 more times when you see the broken `call` instructions. Once you're finished, you should see something like the following.
 
-![all calls converted](../../assets/pma_lab15-1_call-convert-all.png)
+![all calls converted](/assets/pma_lab15-1_call-convert-all.png)
 
 Now we're able to analyze the once obfuscated code blocks. You can ultimately ignore the `db 0E8h` lines, or you can convert them into `nop` instructions if they bother you--either way, they aren't used.
 
@@ -43,11 +43,11 @@ If you attempted to enter the characters in the order in which they're seen in (
 ## 15-2
 The `main()` function starts at `loc_401000`. Scrolling down, broken disassembly can be found starting at `401163`.
 
-![broken disassembly](../../assets/pma_lab15-2_img1_broken-assembly.png)
+![broken disassembly](/assets/pma_lab15-2_img1_broken-assembly.png)
 
 Converting this data to code gives us the following output:
 
-![fixed disassembly](../../assets/pma_lab15-2_img2_fixed-assembly.png)
+![fixed disassembly](/assets/pma_lab15-2_img2_fixed-assembly.png)
 
 Note that I also converted the `jmp` above this block into data as it's not really important. In this data-now-code, we see a call to `sub_401386`. Opening this function gives us a simple function which appears to be building string one character at a time. Converting the hex values into characters gives us the following URL: `hxxp://www.practicalmalwarenalysis.com/bamboo.html`
 
@@ -100,15 +100,15 @@ The blocks of code that follow are ultimately taking the hostname and obfuscatin
 
 When the target web page has been downloaded, the program then searches for the string "Bamboo::" and then it searches again for "::". 
 
-![string search in html](../../assets/pma_lab15-2_img3_bamboo.png)
+![string search in html](/assets/pma_lab15-2_img3_bamboo.png)
 
 After the above block of code, we see a `jmp` which appears to jump into itself and then some nonsensical data which happens after the jump.
 
-![jump into self](../../assets/pma_lab15-2_img4_jmp-self.png)
+![jump into self](/assets/pma_lab15-2_img4_jmp-self.png)
 
 The jump is technically invalid, so converting it to data then converting the byte after the jump opcode into code reveals new information.
 
-![fixed jump into self](../../assets/pma_lab15-2_img5_jmp-fixed.png)
+![fixed jump into self](/assets/pma_lab15-2_img5_jmp-fixed.png)
 
 However, again, we see some more nonsense, so we just repeat our process of turning code into data and then back again to reveal some new instructions. One interesting instruction is the call to `sub_40130f` which, like `sub_401386`, simply sets up a string called "Account Summary.xls.exe". After the file is retrieved, it's executed in a shell as noted by `ShellExecuteA` and the malware is now running on the machine.
 
@@ -278,7 +278,7 @@ Manually patching instructions would likely take a while unless you wrote a scri
 
 Modifying the PEB would be another option as long as you identified the proper place in memory where the flags are set. We know that the PEB starts at `fs:[0x30]`, so in x32dbg's dump window, we can navigate to that address by pressing `ctrl+g` then entering that value in the box.
 
-![x64dbg peb dump](../../assets/pma_lab16-1_img1_x32dbg.png)
+![x64dbg peb dump](/assets/pma_lab16-1_img1_x32dbg.png)
 
 Once you identify the PEB, you can start clearing values in the PEB to prevent the checks from occurring. This is as simple as clearing the values in memory and setting them to 0. The only exception is the `ForcedFlags` field. Instead, you set the pointer to the `ProcessHeap` array to 0.
 
@@ -365,7 +365,7 @@ Now we're presented with two options: we can attempt to write our own script bas
 
 Upon attempting to load the program into OllyDbg, the program terminates immediately. This tells us that something is preventing the program from running if being debugged by OllyDbg. I reviewed the disassembly in IDA pro and noticed that the section was prefixed with `.tls` which indicates that this program is likely using [thread-local storage (TLS)](https://en.wikipedia.org/wiki/Thread-local_storage) callbacks (not to be confused with transport layer security). I opened the binary in CFF explorer to confirm the presence of the TLS callback section.
 
-![cff explorer tls callback section](../../assets/pma_lab16-2_img1_cff.png)
+![cff explorer tls callback section](/assets/pma_lab16-2_img1_cff.png)
 
 As far as we're concerned, the important part of about TLS callbacks is that they're executed _before_ a program's entry point is hit. Most debuggers break on a program's entry point by default, so this TLS section is free to execute code before the debugger automatically stops the program.
 
@@ -373,13 +373,13 @@ Most modern debuggers should have the option to break on TLS callbacks, but some
 
 After configuring OllyDbg properly, restart the program. Luckily, we see that OllyDbg doesn't just quit this time. Instead, execution has been paused at the start of the TLS callback function. Almost immediately, we can see suspicious code:
 
-![ollydbg tls callback ollydbg detection](../../assets/pma_lab16-2_img2_tls-callback.png)
+![ollydbg tls callback ollydbg detection](/assets/pma_lab16-2_img2_tls-callback.png)
 
 This code is using [FindWindowA](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindowa) to see if OllyDbg is running. If this check succeeds, the program quits. In order to bypass this check, we can patch the `jz` instruction to `jmp` so the jump is always taken.
 
 After modifying the jump instruction, I set a breakpoint at 0x4011e0 which is the `main()` function simply to stop the execution. I then set another breakpoint after 0x40122c so the variable at 0x408030 gets populated.  The comments column is then populated with the string "bzqrp@ss" at 0x40122e.
 
-![ollydbg incorrect password](../../assets/pma_lab16-2_img3_olly-wrong-pass.png)
+![ollydbg incorrect password](/assets/pma_lab16-2_img3_olly-wrong-pass.png)
 
 We see this string and 2 other arguments get pushed to the stack and then the function `sub_402110` is called. The other 2 arguments are the number 4 and the argument that was supplied to the command line. Based on the 3 arguments and the content of the function, we can infer that the function being called is `strncmp`. Now we know where the comparison between the password and the user supplied argument is being performed. 
 
@@ -389,11 +389,11 @@ However, typing in "bzqr" in our command line gives us an invalid password error
 
 To bypass this problem, we will need to modify the PEB `BeingDebugged` member to 0 or just use an anti-anti-debugging plugin. I personally opted for the plugin since it's easier. After installing the plugin and rerunning the program, we get back down to the string again and we see the value "bzrrp@ss" instead of "bzqrp@ss".
 
-![x32dbg showing right password](../../assets/pma_lab16-2_img4_x32dbg-pass.png)
+![x32dbg showing right password](/assets/pma_lab16-2_img4_x32dbg-pass.png)
 
 This means that the correct password is "bzrr".
 
-![successful password usage](../../assets/pma_lab16-2_img5_success.png)
+![successful password usage](/assets/pma_lab16-2_img5_success.png)
 
 [\[back to top\]](#)
 
@@ -404,7 +404,7 @@ Running strings on the binary gives us a lot of junk, some library functions, an
 
 Opening the program and identifying the program's `main()` function, `sub_4013d0`, shows the use of a stack string. I know this is a stack string because the hex values here fall within the ASCII range.
 
-![ida stack string](../../assets/pma_lab16-3_img1_stack-string.png)
+![ida stack string](/assets/pma_lab16-3_img1_stack-string.png)
 
 Converting these values to characters gives us the following strings:
 * 1qbz2wsx3edc
@@ -460,9 +460,9 @@ Ultimately, I figured out what happens when the timing check isn't successful. T
 
 When this function finishes, you're left with one of two strings: `qgr.exe` or `peo.exe`. `qgr.exe` is what you get when you fail the timing checks, and `peo.exe` is what you get if you pass them. This is important for the `strncmp` (`sub_4017b0`) function call which compares the binary's current name with the transformed name. The 2 values have to match or else the program will terminate. Therefore, the binary should be renamed to `peo.exe` in order to allow the malware to run correctly when not under a debugger. You could change the binary's name to `qgr.exe` while debugging it so you do not have to worry about patching the program during a debugging session, but when the malware runs for real, it will need to have the name `peo.exe`, so knowing its real name is important for when you list out the indicators of compromise.
 
-![executable name failed timing check](../../assets/pma_lab16-3_img2_failed-timing-check.png)
+![executable name failed timing check](/assets/pma_lab16-3_img2_failed-timing-check.png)
 
-![executable name successful timing check](../../assets/pma_lab16-3_img3_success-timing-check.png)
+![executable name successful timing check](/assets/pma_lab16-3_img3_success-timing-check.png)
 
 A couple of blocks of code down we see 2 calls to `GetTickCount` and a call to `sub_401000`. Inside `sub_401000`, we see another forced exception to slow down performance of the debugger, so when the second `GetTickCount` is called the timing will fail and the program will quit. Analyzing `sub_401000` shows that it doesn't do anything important except to force an exception, so this function can be patched out to avoid failing the timing check. Alternatively, the `jbe` can be patched to `jmp` so the jump is always taken.
 
@@ -512,7 +512,7 @@ push    0               ; uExitCode
 
 If the timing checks are successful, this subroutine then takes the string `1qbz2wsx3edc` and uses it to decode the seemingly junk string that's stored at 0x40604c.
 
-![junk string at 40604c](../../assets/pma_lab16-3_img4_junk-string.png)
+![junk string at 40604c](/assets/pma_lab16-3_img4_junk-string.png)
 
 ```
 loc_401397:
