@@ -43,6 +43,14 @@ code {
     //text-shadow: $inline-shadow;
 }
 
+blockquote {
+    border-left: solid 1px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
 footer {
     border-top: solid $border-color;
 }
