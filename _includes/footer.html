@@ -1,3 +1,8 @@
+{%if page.ref %}
+<div class="references">
+    <p id="reference">[𝄞]: {{ page.ref }} <a href="#heading-1">↩</a></p>
+</div>
+{% endif %}
 <footer>
     {% include navigation.html %}
     <p class="glider">&nbsp;.&nbsp;<br />&nbsp;&nbsp;.<br />...</p>
