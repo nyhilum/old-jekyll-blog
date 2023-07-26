@@ -11,8 +11,14 @@ defaults:
   -
     scope:
       path: ""
+    values:
+      title: "nyhil"
+      layout: "default"
+  -
+    scope:
+      path: ""
       type: "posts"
     values:
-      layout: "post"
+      layout: "default"
 ---
 
