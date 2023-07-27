@@ -2,6 +2,7 @@
 title: privacy vs. anonymity
 subtitle: "be careful what you're looking at because it might be looking back <!--Protest the Hero/Scurrilous/Sex Tapes https://music.youtube.com/watch?v=8CtBjBIGUVs -->"
 tags: privacy
+ref: "[protest the hero/scurrilous/sex tapes](https://music.youtube.com/watch?v=8CtBjBIGUVs)"
 ---
 One mistake that's often made is conflating privacy and anonymity and thinking having one implies the presence of the other. On the contrary, it's entirely possible to have one, but not the other. Most tools that advertise themselves as "privacy-focused" generally strive to provide the privacy piece of the equation, but may not do anything regarding anonymity. It's important to understand the difference between these concepts, and when a service offers only one, the other, or both. 
 
