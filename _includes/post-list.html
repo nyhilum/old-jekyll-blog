@@ -1,6 +1,6 @@
 <ul class="post-list">
-    {% if site.categories[page.cat] | size > 0 %}
-        {% for post in site.categories[page.cat] %}
+    {% if site.categories[page.category] | size > 0 %}
+        {% for post in site.categories[page.category] %}
             {% include posts.html %}
         {% endfor %}
     {% elsif page.url == "/" %}
