@@ -1,8 +1,8 @@
 ---
 title: practical malware analysis lab solutions
-subtitle: how i've anticipated your return to planet earth <!-- Thank You Scientist -- FXMLDR -->
-slug: pma lab solutions
+subtitle: how i've anticipated your return to planet earth
 tags: labs malware reversing
+ref: ["Thank You Scientist/Terraformer/FXMLDR","https://www.youtube.com/watch?v=UxzSGMYogow"]
 ---
 
 This page documents the solutions to the labs found in the book [Practical Malware Analysis](https://nostarch.com/malware). While the solutions are found in the back of the book, I find it useful to write things in my own words for learning purposes.

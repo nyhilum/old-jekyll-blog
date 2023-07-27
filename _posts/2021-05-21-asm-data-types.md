@@ -1,8 +1,8 @@
 ---
 title: data types in assembly
 subtitle: all these words, and still there is nothing to hear
-slug: data types assembly
 tags: asm notes
+ref: ["scar symmetry/pitch black progress/oscillation point","https://www.youtube.com/watch?v=d7cBwkz8tcE"]
 ---
 
 Defining variables in strictly typed programming languages looks something like this: `datatype varName = varValue`. However, after compilation, data type information is "hidden" as data types are turned into [words](https://en.wikipedia.org/wiki/Word_\(computer_architecture\)). I say hidden because at first glance it's not always obvious what data type a value used to be unless the CPU is executing an instruction that is intended for specific data types (e.g. `mov` vs. `movss` in x64).

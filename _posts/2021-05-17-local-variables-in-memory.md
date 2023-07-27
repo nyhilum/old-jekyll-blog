@@ -1,8 +1,8 @@
 ---
 title: local variables in memory
-subtitle: thanks for the memories
-slug: local variables in memory
+subtitle: thnks fr th mmrs
 tags: asm notes
+ref: ["fall out boy/infinity on high/thnks fr th mmrs", "https://www.youtube.com/watch?v=onzL0EM1pKY"]
 ---
 
 In programming, we're taught that variables are stored in memory, but what *exactly* does this mean?
