@@ -1,6 +1,6 @@
 {%if page.ref %}
 <div class="references">
-    <p id="reference">[𝄞]: {{ page.ref }} <a href="#heading-1">↩</a></p>
+    <p id="reference">[𝄞]: <a href={{ page.ref[1] }}>{{ page.ref[0] }}</a> <a href="#">↩</a></p>
 </div>
 {% endif %}
 <footer>
