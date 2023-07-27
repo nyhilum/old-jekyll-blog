@@ -1,10 +1,12 @@
-- name: "all"
+- name: /home
   link: /
-- name: tech
+- name: /tech
   link: /tech/
-- name: ctf
+- name: /ctf
   link: /ctf/
-- name: philosophy
+- name: /philosophy
   link: /philosophy/
-- name: whoami
+- name: /refs
+  link: /refs/
+- name: /whoami
   link: /whoami/
